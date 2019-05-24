@@ -1,0 +1,143 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Lab 12.2 pipeline stack
+Parameters:
+  GitBranch:
+    Type: String
+    Description: Branch to pull from
+    Default: master
+  GitOwner:
+    Type: String
+    Description: Owner of GitHub account
+    Default: mcahill7
+  GitRepo:
+    Type: String
+    Description: Repo to pull from
+    Default: pr-testing
+  GitToken:
+    Type: String
+    Description: OAuth token for GitHub
+    Default: 1
+  GitRepoUrl:
+    Type: String
+    Description: URL of GitRepo
+    Default: https://github.com/mcahill7/pr-testing
+  RolesStackName:
+    Type: String
+    Description: Stackname containing required roles
+    Default: mcahill-lab12-roles
+  ProjectName:
+    Type: String
+    Description: Project Name for codebuild, pipeline
+    Default: mcahill-demo
+
+Globals:
+  Function:
+    Runtime: ruby2.5
+    Timeout: 30
+    Environment:
+      Variables:
+        GIT_TOKEN: !Ref GitToken
+
+Resources:
+
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub ${ProjectName}-build
+      ServiceRole: !Ref CodeBuildRole
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:2.0
+        PrivilegedMode: true
+      Source:
+        Type: GITHUB
+        Auth:
+          Type: OAUTH
+        Location: !Ref GitRepoUrl
+        BuildSpec: buildspec-ci.yml
+      Triggers:
+        Webhook: true
+        FilterGroups:
+          - - Type: EVENT
+              Pattern: PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED
+            - Type: BASE_REF
+              Pattern: ^refs/heads/master$
+              ExcludeMatchedPattern: false
+          - - Type: EVENT
+              Pattern: PUSH
+            - Type: HEAD_REF
+              Pattern: ^refs/heads/.*
+            - Type: FILE_PATH
+              Pattern: READ_ME
+              ExcludeMatchedPattern: true
+
+    Type: AWS::Events::Rule
+    Properties:
+      Description: Update GitHub Status after CodeBuild completes
+      EventPattern:
+        detail:
+          build-status:
+          - SUCCEEDED
+          - FAILED
+          - STOPPED
+          project-name:
+          - Ref: ProjectName
+        detail-type:
+        - CodeBuild Build State Change
+        source:
+        - aws.codebuild
+      Name: codebuild-ci-notification
+      RoleArn: !GetAtt CodeBuildRole.Arn
+      State: ENABLED
+      Targets:
+      - Arn: !GetAtt LambdaFunction.Arn
+        Id: Update-GitHub-Status
+
+  LambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./lambda
+      Handler: index.handler
+
+  S3Bucket:
+    Type: AWS::S3::Bucket
+
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: CodeBuildAllow
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              -
+                Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:DeleteLogGroup
+                  - logs:DeleteLogStream
+                  - logs:PutLogEvents
+                  - cloudformation:ValidateTemplate
+                  - cloudformation:DescribeStacks
+                Resource: '*'
+              -
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:GetObjectVersion
+                Resource: !Sub arn:aws:s3:::${S3Bucket}/*
