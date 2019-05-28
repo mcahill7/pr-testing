@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
-Description: Lab 9.2 SAM template to write to DynamoDb Table
+Description: Post CodeCoverage to Github pull request
 Parameters:
   GitToken:
     Type: String
@@ -25,8 +25,6 @@ Resources:
         Statement:
         - Effect: Allow
           Action:
-          - codebuild:BatchGetBuilds
-          - codebuild:StartBuild
           - logs:CreateLogGroup
           - logs:CreateLogStream
           - logs:DeleteLogGroup

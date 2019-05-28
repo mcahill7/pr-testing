@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Lab 12.2 pipeline stack
+Description: Run tests/code coverage against pull requests using codebuild and events
 Parameters:
   GitRepoUrl:
     Type: String
@@ -80,6 +80,8 @@ Resources:
             Principal:
               Service:
                 - codebuild.amazonaws.com
+                - lambda.amazonaws.com
+                - events.amazonaws.com
             Action:
               - sts:AssumeRole
       Policies:
@@ -95,9 +97,10 @@ Resources:
                   - logs:DeleteLogGroup
                   - logs:DeleteLogStream
                   - logs:PutLogEvents
-                  - cloudformation:ValidateTemplate
-                  - cloudformation:DescribeStacks
                   - lambda:Invoke*
+                  - events:PutRule
+                  - events:PutEvents
+                  - events:PutTargets
                 Resource: '*'
               -
                 Effect: Allow
