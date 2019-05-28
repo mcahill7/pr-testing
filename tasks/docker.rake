@@ -1,5 +1,4 @@
 require 'docker'
-require_relative 'constants'
 
 desc 'Build Docker Image'
 task 'docker:build' do
