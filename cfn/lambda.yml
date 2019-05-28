@@ -1,0 +1,33 @@
+
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: Lab 9.2 SAM template to write to DynamoDb Table
+
+Parameters:
+  GitToken:
+    Type: String
+    Description: OAuth token for GitHub
+    Default: 1
+
+Globals:
+  Function:
+    Runtime: ruby2.5
+    Timeout: 30
+    Environment:
+      Variables:
+        GIT_TOKEN: !Ref GitToken
+
+Resources:
+
+  LambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .././lambda
+      Handler: index.handler
+
+Outputs:
+  LambdaArn:
+    Description: Lambda Arn
+    Value: !GetAtt LambdaFunction.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-LambdaArn
