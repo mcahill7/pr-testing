@@ -23,6 +23,20 @@ Resources:
     Properties:
       CodeUri: .././lambda
       Handler: index.handler
+      Policies:
+        - AWSLambdaExecute
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - codebuild:BatchGetBuilds
+                - codebuild:StartBuild
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:DeleteLogGroup
+                - logs:DeleteLogStream
+                - logs:PutLogEvents
+              Resource: '*'
 
 Outputs:
   LambdaArn:
