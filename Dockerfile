@@ -9,7 +9,6 @@ RUN apk --update add --virtual build-dependencies ruby-dev build-base bash && \
     apk del build-dependencies
 
 COPY /app /app
-COPY version /app
 
 RUN chown -R nobody:nogroup /app
 
