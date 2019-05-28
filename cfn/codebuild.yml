@@ -34,7 +34,7 @@ Resources:
         Webhook: true
         FilterGroups:
           - - Type: EVENT
-              Pattern: PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED
+              Pattern: PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED,PULL_REQUEST_REOPENED
             - Type: BASE_REF
               Pattern: ^refs/heads/master$
               ExcludeMatchedPattern: false
@@ -42,9 +42,6 @@ Resources:
               Pattern: PUSH
             - Type: HEAD_REF
               Pattern: ^refs/heads/.*
-            - Type: FILE_PATH
-              Pattern: READ_ME
-              ExcludeMatchedPattern: true
 
   LambdaTrigger:
     Type: AWS::Events::Rule
