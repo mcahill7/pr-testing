@@ -29,8 +29,6 @@ Resources:
           Statement:
             - Effect: Allow
               Action:
-                - codebuild:BatchGetBuilds
-                - codebuild:StartBuild
                 - logs:CreateLogGroup
                 - logs:CreateLogStream
                 - logs:DeleteLogGroup

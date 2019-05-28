@@ -1,3 +1,4 @@
 demo-ecr-repo
 demo-image-id
 spec/secrets.yml
+coverage

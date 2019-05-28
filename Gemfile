@@ -13,4 +13,5 @@ group :test do
   gem 'rubocop'
   gem 'serverspec'
   gem 'rake'
+  gem 'simplecov'
 end
