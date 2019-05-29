@@ -54,7 +54,7 @@ Resources:
           - FAILED
           - STOPPED
           project-name:
-          - Ref: ProjectName
+            - !Ref CodeBuildProject
         detail-type:
         - CodeBuild Build State Change
         source:
@@ -84,6 +84,8 @@ Resources:
                 - events.amazonaws.com
             Action:
               - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSLambdaExecute
       Policies:
         - PolicyName: CodeBuildAllow
           PolicyDocument:
