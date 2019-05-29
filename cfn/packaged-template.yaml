@@ -17,10 +17,13 @@ Resources:
   LambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
+      Role:
+        Fn::ImportValue: mcahill-build-CodeBuildRoleArn
       CodeUri: s3://masoncahilldemo/api/07f623c0d4a8f31097291e3830eb5a86
       Handler: index.handler
       Policies:
       - AWSLambdaExecute
+      - AWSCodeBuildDeveloperAccess
       - Version: 2012-10-17
         Statement:
         - Effect: Allow

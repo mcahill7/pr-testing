@@ -98,6 +98,7 @@ Resources:
                   - logs:DeleteLogStream
                   - logs:PutLogEvents
                   - lambda:Invoke*
+                  - lambda:Get*
                   - events:PutRule
                   - events:PutEvents
                   - events:PutTargets
@@ -109,3 +110,10 @@ Resources:
                   - s3:PutObject
                   - s3:GetObjectVersion
                 Resource: !Sub arn:aws:s3:::${S3Bucket}/*
+
+Outputs:
+  RoleArn:
+    Description: Role Arn
+    Value: !GetAtt CodeBuildRole.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-CodeBuildRoleArn
