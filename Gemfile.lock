@@ -1,6 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    addressable (2.6.0)
+      public_suffix (>= 2.0.2, < 4.0)
     ast (2.4.0)
     aws-eventstream (1.0.1)
     aws-partitions (1.142.0)
@@ -725,20 +727,26 @@ GEM
     dry-inflector (0.1.2)
     eventmachine (1.2.7)
     excon (0.62.0)
+    faraday (0.15.4)
+      multipart-post (>= 1.2, < 3)
     ipaddress (0.8.3)
     jaro_winkler (1.5.2)
     jmespath (1.4.0)
     json (2.2.0)
     multi_json (1.13.1)
+    multipart-post (2.1.1)
     mustermann (1.0.3)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (5.1.0)
     net-telnet (0.1.1)
+    octokit (4.14.0)
+      sawyer (~> 0.8.0, >= 0.5.3)
     parallel (1.13.0)
     parser (2.6.0.0)
       ast (~> 2.4.0)
     powerpack (0.1.2)
+    public_suffix (3.1.0)
     rack (2.0.6)
     rack-protection (2.0.5)
       rack
@@ -771,6 +779,9 @@ GEM
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.4.0)
     ruby-progressbar (1.10.0)
+    sawyer (0.8.2)
+      addressable (>= 2.3.5)
+      faraday (> 0.8, < 2.0)
     serverspec (2.41.3)
       multi_json
       rspec (~> 3.0)
@@ -811,6 +822,7 @@ DEPENDENCIES
   awspec
   docker-api
   json
+  octokit
   rack-test
   rake
   rspec
