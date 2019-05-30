@@ -11,6 +11,6 @@ class DemoApp < Sinatra::Application
   end
 
   def message
-    'Hello World'
+    'Hello World1'
   end
 end
