@@ -21,10 +21,13 @@ Resources:
   LambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
+      #Role: !ImportValue mcahill-build-CodeBuildRoleArn
+      Role: !GetAtt LambdaRole.Arn
       CodeUri: .././lambda
       Handler: index.handler
       Policies:
         - AWSLambdaExecute
+        - AWSCodeBuildDeveloperAccess
         - Version: 2012-10-17
           Statement:
             - Effect: Allow
@@ -35,6 +38,52 @@ Resources:
                 - logs:DeleteLogStream
                 - logs:PutLogEvents
               Resource: '*'
+
+  LambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref LambdaFunction
+      Principal: events.amazonaws.com
+      SourceArn: !ImportValue mcahill-build-LambdaTriggerArn
+
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+                - lambda.amazonaws.com
+                - events.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSLambdaExecute
+      Policies:
+        - PolicyName: CodeBuildAllow
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              -
+                Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:DeleteLogGroup
+                  - logs:DeleteLogStream
+                  - logs:PutLogEvents
+                  - lambda:Invoke*
+                  - lambda:Get*
+                  - events:PutRule
+                  - events:PutEvents
+                  - events:PutTargets
+                  - codebuild:BatchGetBuilds
+                Resource: '*'
 
 Outputs:
   LambdaArn:

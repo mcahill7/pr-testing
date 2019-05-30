@@ -1,3 +1,4 @@
 AllCops:
   Excludes:
     - spec/spec_helper.rb
+    - lambda/vendor/*

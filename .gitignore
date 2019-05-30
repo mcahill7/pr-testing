@@ -2,3 +2,6 @@ demo-ecr-repo
 demo-image-id
 spec/secrets.yml
 coverage
+.DS_Store
+.bundle
+lambda/vendor

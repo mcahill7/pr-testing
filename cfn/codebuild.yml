@@ -54,7 +54,7 @@ Resources:
           - FAILED
           - STOPPED
           project-name:
-          - Ref: ProjectName
+            - !Ref CodeBuildProject
         detail-type:
         - CodeBuild Build State Change
         source:
@@ -84,6 +84,8 @@ Resources:
                 - events.amazonaws.com
             Action:
               - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSLambdaExecute
       Policies:
         - PolicyName: CodeBuildAllow
           PolicyDocument:
@@ -98,6 +100,7 @@ Resources:
                   - logs:DeleteLogStream
                   - logs:PutLogEvents
                   - lambda:Invoke*
+                  - lambda:Get*
                   - events:PutRule
                   - events:PutEvents
                   - events:PutTargets
@@ -109,3 +112,16 @@ Resources:
                   - s3:PutObject
                   - s3:GetObjectVersion
                 Resource: !Sub arn:aws:s3:::${S3Bucket}/*
+
+Outputs:
+  RoleArn:
+    Description: Role Arn
+    Value: !GetAtt CodeBuildRole.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-CodeBuildRoleArn
+
+  EventArn:
+    Description: Event Arn
+    Value: !GetAtt LambdaTrigger.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-LambdaTriggerArn
