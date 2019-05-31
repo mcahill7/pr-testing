@@ -21,8 +21,9 @@ Resources:
         Fn::GetAtt:
         - LambdaRole
         - Arn
-      CodeUri: s3://masoncahilldemo/api/c8523adfc251a6216bc7f211ba063c22
+      CodeUri: s3://masoncahilldemo/api/53d0f113bf2c1fb0bfec0c3b2a892e11
       Handler: index.handler
+      MemorySize: 1024
       Policies:
       - AWSLambdaExecute
       - AWSCodeBuildDeveloperAccess

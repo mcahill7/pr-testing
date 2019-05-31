@@ -16,8 +16,12 @@ def handler(event:, context:)
         puts "repo name: #{repo_name}"
         `cd /tmp && curl -LO #{repo_url}/archive/master.zip`
         puts `ls /tmp && unzip /tmp/master.zip -d /tmp`
+        puts `ls /tmp`
         #`cd /tmp/#{repo_name}-master && rspec`
-        RSpec::Core::Runner.run(["/tmp/#{repo_name}-master/spec"])
+        #puts `cd /tmp/#{repo_name}-master`
+        puts `pwd && ls`
+        ENV['HOME'] = '/tmp/#{repo_name}-master'
+        RSpec::Core::Runner.run(["/tmp/#{repo_name}-master/spec/app_spec.rb"])
         json_from_file = File.read("/tmp/master/coverage/.last_run.json")
         json = JSON.parse(json_from_file)
         coverage = json['result']['covered_percent']

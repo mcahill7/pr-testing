@@ -25,6 +25,7 @@ Resources:
       Role: !GetAtt LambdaRole.Arn
       CodeUri: .././lambda
       Handler: index.handler
+      MemorySize: 1024
       Policies:
         - AWSLambdaExecute
         - AWSCodeBuildDeveloperAccess
