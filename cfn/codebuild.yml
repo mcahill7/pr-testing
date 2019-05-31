@@ -60,8 +60,6 @@ Resources:
                 - events.amazonaws.com
             Action:
               - sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AWSLambdaExecute
       Policies:
         - PolicyName: CodeBuildAllow
           PolicyDocument:
@@ -78,7 +76,7 @@ Resources:
                   - events:PutRule
                   - events:PutEvents
                   - events:PutTargets
-                  - sm:GetParameters
+                  - ssm:GetParameters
                 Resource: '*'
               -
                 Effect: Allow
