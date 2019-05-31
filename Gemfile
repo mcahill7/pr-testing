@@ -9,9 +9,9 @@ group :test do
   gem 'awspec'
   gem 'docker-api'
   gem 'rack-test'
+  gem 'rake'
   gem 'rspec'
   gem 'rubocop'
   gem 'serverspec'
-  gem 'rake'
   gem 'simplecov'
 end

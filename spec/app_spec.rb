@@ -10,16 +10,16 @@ RSpec.describe 'Stelligent DemoApp' do
     DemoApp
   end
 
-  it 'is healthy' do
-    get '/'
+  # it 'is healthy' do
+  #  get '/'
 
-    expect(last_response).to be_ok
-  end
+  #  expect(last_response).to be_ok
+  # end
 
-  it 'says message' do
-    get '/'
-    message = 'Hello World'
+  # it 'says message' do
+  #  get '/'
+  #  message = 'Hello World'
 
-    expect(JSON.parse(last_response.body)['message']).to match(message)
-  end
+  #  expect(JSON.parse(last_response.body)['message']).to match(message)
+  # end
 end
