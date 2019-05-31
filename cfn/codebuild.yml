@@ -43,29 +43,6 @@ Resources:
             - Type: HEAD_REF
               Pattern: ^refs/heads/.*
 
-  LambdaTrigger:
-    Type: AWS::Events::Rule
-    Properties:
-      Description: Update GitHub Status after CodeBuild completes
-      EventPattern:
-        detail:
-          build-status:
-          - SUCCEEDED
-          - FAILED
-          - STOPPED
-          project-name:
-            - !Ref CodeBuildProject
-        detail-type:
-        - CodeBuild Build State Change
-        source:
-        - aws.codebuild
-      Name: codebuild-ci-notification
-      RoleArn: !GetAtt CodeBuildRole.Arn
-      State: ENABLED
-      Targets:
-      - Arn: !ImportValue mcahill-lambda-LambdaArn
-        Id: Update-GitHub-Status
-
   S3Bucket:
     Type: AWS::S3::Bucket
 
@@ -80,7 +57,6 @@ Resources:
             Principal:
               Service:
                 - codebuild.amazonaws.com
-                - lambda.amazonaws.com
                 - events.amazonaws.com
             Action:
               - sts:AssumeRole
@@ -99,11 +75,10 @@ Resources:
                   - logs:DeleteLogGroup
                   - logs:DeleteLogStream
                   - logs:PutLogEvents
-                  - lambda:Invoke*
-                  - lambda:Get*
                   - events:PutRule
                   - events:PutEvents
                   - events:PutTargets
+                  - sm:GetParameters
                 Resource: '*'
               -
                 Effect: Allow
@@ -119,9 +94,3 @@ Outputs:
     Value: !GetAtt CodeBuildRole.Arn
     Export:
       Name: !Sub ${AWS::StackName}-CodeBuildRoleArn
-
-  EventArn:
-    Description: Event Arn
-    Value: !GetAtt LambdaTrigger.Arn
-    Export:
-      Name: !Sub ${AWS::StackName}-LambdaTriggerArn

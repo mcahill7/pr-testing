@@ -1,5 +1,9 @@
 version: 0.2
 
+env:
+  parameter-store:
+    GIT_TOKEN: /mason.cahiill/demo/gittoken
+
 phases:
   install:
     runtime-versions:
@@ -18,4 +22,4 @@ phases:
       - bundle exec rake docker:build
   post_build:
     commands:
-      - echo testing
+      - bundle exec rake coverage
