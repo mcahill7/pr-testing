@@ -9,27 +9,37 @@ end
 
 desc 'Get Code Coverage'
 task 'coverage' do
+  repo_url = 'https://github.com/mcahill7/pr-testing'
+  repo_name = repo_url.delete_prefix('https://github.com/').partition('/').last
+  repo_owner = repo_url.delete_prefix('https://github.com/').partition('/').first
+  token = ENV['GIT_TOKEN']
+  source = ENV['CODEBUILD_SOURCE_VERSION']
+
+  #Calculate coverage from current branch
   `rspec`
   json_from_file = File.read('./coverage/.last_run.json')
   json = JSON.parse(json_from_file)
   branch_coverage = json['result']['covered_percent']
-  puts "Branch Coverage: #{branch_coverage}"
 
-  repo_url = 'https://github.com/mcahill7/pr-testing'
-  repo_name = repo_url.delete_prefix('https://github.com/').partition('/').last
-  repo_owner = repo_url.delete_prefix('https://github.com/').partition('/').first
-
+  #pull master branch from github and calculate coverage for master branch
   `curl -LO #{repo_url}/archive/master.zip`
   `unzip master.zip && cd #{repo_name}-master && rspec`
   json_from_file = File.read("#{repo_name}-master/coverage/.last_run.json")
   json = JSON.parse(json_from_file)
   master_coverage = json['result']['covered_percent']
-  puts "Master Coverage: #{master_coverage}"
-  `rm -rf #{repo_name}-master && rm master.zip`
-  coverage_delta = branch_coverage - master_coverage
-  puts puts "Coverage Change: #{coverage_delta}"
 
+  #Remove master branch files
+  `rm -rf #{repo_name}-master && rm master.zip`
+  if (branch_coverage - master_coverage) >= 0
+    coverage_delta = "+" + (branch_coverage - master_coverage).to_s + "%"
+  else
+    coverage_delta = "-" + (branch_coverage - master_coverage).to_s + "%"
+  end
+
+  #Check if we are running in Codebuild, if so post results to github
   if ENV['CODEBUILD_SOURCE_VERSION'] != '' && ENV['GIT_TOKEN'] != ''
-    `sh githook.sh #{repo_owner} #{repo_name} #{ENV['CODEBUILD_SOURCE_VERSION']} #{ENV['GIT_TOKEN']} #{coverage_delta}`
+   # `sh tasks/githook.sh #{repo_owner} #{repo_name} #{ENV['CODEBUILD_SOURCE_VERSION']} #{ENV['GIT_TOKEN']} #{coverage_delta}`
+  command = "curl \"https://api.github.com/repos/#{repo_owner}/#{repo_name}/statuses/#{source}?access_token=#{token}\" -H \"Content-Type: application/json\" -X POST -d '{\"context\": \"Coverage Change\", \"state\": \"success\", \"description\": \"#{coverage_delta}\"}'"
+  `#{command}`
   end
 end
