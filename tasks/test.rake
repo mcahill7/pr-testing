@@ -13,7 +13,7 @@ task 'coverage' do
   repo_name = repo_url.delete_prefix('https://github.com/').partition('/').last
   repo_owner = repo_url.delete_prefix('https://github.com/').partition('/').first
   token = ENV['GIT_TOKEN']
-  source = ENV['CODEBUILD_SOURCE_VERSION']
+  source = ENV['CODEBUILD_RESOLVED_SOURCE_VERSION']
 
   # Calculate coverage from current branch
   `rspec`
@@ -37,7 +37,7 @@ task 'coverage' do
                    end
 
   # Check if we are running in Codebuild, if so post results to github
-  if ENV['CODEBUILD_SOURCE_VERSION'] != '' && ENV['GIT_TOKEN'] != ''
+  if token != '' && source != ''
     `curl \"https://api.github.com/repos/#{repo_owner}/#{repo_name}/statuses/#{source}?access_token=#{token}\" -H \"Content-Type: application/json\" -X POST -d '{\"context\": \"Coverage Change\", \"state\": \"success\", \"description\": \"#{coverage_delta}\"}'`
   end
 end
