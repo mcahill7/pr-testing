@@ -30,10 +30,6 @@ task 'coverage' do
   puts puts "Coverage Change: #{coverage_delta}"
 
   if ENV['CODEBUILD_SOURCE_VERSION'] != '' && ENV['GIT_TOKEN'] != ''
-    git_post = `curl \https://api.github.com/repos/#{repo_owner}/#{repo_name}/statuses/#{ENV['CODEBUILD_SOURCE_VERSION']}?access_token=#{ENV['GIT_TOKEN']}\" \
-    -H \"Content-Type: application/json\" \
-    -X POST \
-    -d \"{\"state\": \"success\", \"description\": \"Coverage Change: #{coverage_delta}%\"}\"
-  `
+    `sh githook.sh #{repo_owner} #{repo_name} #{ENV['CODEBUILD_SOURCE_VERSION']} #{ENV['GIT_TOKEN']} #{coverage_delta}`
   end
 end
